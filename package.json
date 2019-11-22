@@ -22,8 +22,6 @@
     "vinyl-ftp": "^0.6.1"
   },
   "dependencies": {
-    "vue": "^2.6.10",
-    "vue": "latest",
     "vue": "latest"
   }
 }

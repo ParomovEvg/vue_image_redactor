@@ -8,6 +8,7 @@ Vue.component("second-step",{
             <label>
                 <span><input ref="imgInput" @change="imageInputHandler" id="files" type="file" name="your-file-photo" size="40" class="reg-file" accept=".jpg,.png,"></span>
             </label>
+            
         </form>
         <div id="img-preview">
             <img v-if="image" :src="image" alt="">
@@ -19,8 +20,19 @@ Vue.component("second-step",{
     data(){
         return {
             isHighlight:false,
-            image:undefined,
+            imageData:"",
         }
+    },
+    computed:{
+      image:{
+          get(){
+              return this.imageData;
+          },
+          set(value){
+              this.$emit('set:image', value);
+              this.imageData = value;
+          }
+      }
     },
     methods:{
         toStep(value){
