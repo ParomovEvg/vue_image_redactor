@@ -6,6 +6,7 @@ let app = new Vue({
   data:{
     step: 1,
     userImage: "",
+    readyImage:"",
   },
   methods:{
     toStep(value){
@@ -13,7 +14,19 @@ let app = new Vue({
     },
     setImage(value){
       this.userImage = value
+    },
+    getImageData(){
+      console.dir(this.$refs.third);
+      return this.$refs.third.$refs.canvas.toDataURL();
+    },
+    setReadyImage(value){
+      this.readyImage = value
     }
+
+  },
+
+  updated() {
+    console.log(this.$refs)
   }
 });
 

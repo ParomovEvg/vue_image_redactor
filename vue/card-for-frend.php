@@ -1,8 +1,8 @@
 <div id ="card_for_frend">
     <first-step v-if="step===0" v-on:set:step="toStep($event)"></first-step>
     <second-step v-if="step===1" v-on:set:image="setImage($event)" v-on:set:step="toStep($event)"></second-step>
-    <third-step :user-image="userImage" v-if="step===2" v-on:set:step="toStep($event)"></third-step>
-    <fourth-step v-if="step===3" v-on:set:step="toStep($event)"></fourth-step>
+    <third-step ref="third" v-on:set:dataurl="setReadyImage($event)" :user-image="userImage" v-if="step===2" v-on:set:step="toStep($event)"></third-step>
+    <fourth-step :ready-image="readyImage" v-if="step===3" v-on:set:step="toStep($event)"></fourth-step>
 </div>
 <script>
 
@@ -26,14 +26,31 @@
 <style>
     #third .canvas-wrapper{
         width:100%;
-        padding-top: 71.25%;
         position: relative;
+        display: flex;
+        justify-content: center;
+        margin: 30px auto;
+    }
+    .reset-frame{
+        padding-left: 25px;
+        padding-right: 25px;
+        height: 40px;
+        background: transparent;
+        color:#ff182f;
+        border: 1px solid #ff182f;
+        border-radius: 25px;
+        text-transform: uppercase;
+        font-family: CocosignumMaiuscoletto;
+        display: block;
+        font-size: 12px;
+        cursor: pointer;
     }
 #third .canvas-style{
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+margin: 0 auto;
+    width:auto;
+    height: auto;
+
+
+
 }
 </style>

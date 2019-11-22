@@ -3,69 +3,121 @@ Vue.component("third-step",{
     <div class="frame-wrap third" id="third">
         <p class="step">2/3</p>
         <p class="title">Выберите рамку для открытки</p>
-        <div v-show="!frameUrl" class="frame-container">
-                <div v-for="photo in this.photosArr" class="frame-img">
-                    <img @click="shoosFrame(photo.src)" :key="photo.src" :data-url="photo.dataUrl" :src="photo.src" :alt="photo.alt" />
+        <div class="frame-container">
+                <div v-for="(photo, i) in this.photosArr" :class="{active:i === isShoos}" class="frame-img">
+                    <img @click="shoosFrame(i)" :key="photo.src" :data-url="photo.dataUrl" :src="photo.src" :alt="photo.alt" />
                 </div>
         </div>
-        <div v-show="frameUrl" class="">
-            <div @click="shoosFrame('')">X</div>
-            <div v-show="frameUrl" class="canvas-wrapper">
-                <canvas class="canvas-style" style="width:100%; height: 100%;" ref="canvas"></canvas>
+        <div v-show="ready" class="">
+            <div ref="wrapper" v-show="ready" class="canvas-wrapper">
+                <canvas height="500" width="500" id ='c'  class="canvas-style" ref="canvas"></canvas>
             </div>
         </div>
-        <button @click="toStep(3)" class="step-btn">Продолжить</button>
+        <button @click="toStep(3)"  class="step-btn">Продолжить</button>
     </div>
   `,
+
 
     data() {
         return {
             photosArr: photos,
-            image: this.userImage,
-            frameUrl: "",
-            ctx:""
-
+            frameImg: undefined,
+            userImg: undefined,
+            canvas: undefined,
+            ready: false,
+            isShoos: undefined,
         }
     },
     props:["userImage"],
     methods:{
         toStep(value){
-            this.$emit('set:step', value)
+            this.$emit("set:dataurl", this.canvas.toDataURL())
+            this.$emit('set:step', value);
         },
-        shoosFrame(url){
-            this.frameUrl = url;
-        },
-        drawImage(){
-            const userImg = new Image();
+        shoosFrame(i){
+            this.isShoos = i;
+            this.ready = false;
+            const url = this.photosArr[i].src;
             const frameImg = new Image();
-
-            userImg.src = this.image;
-            frameImg.src = this.frameUrl;
-
+            frameImg.src = url;
+            this.frameImg = frameImg;
             frameImg.onload = ()=>{
-                this.ctx.drawImage(userImg, 0 , 0);
-                this.ctx.drawImage(frameImg, 0, 0, 100, 100);
+                this.ready = true;
             }
+        },
+        resetFrame(){
+            this.frameImg = undefined;
+            this.ready = false;
+            if(this.canvas){
+                this.canvas.remove(this.canvas.getActiveObject());
+                this.canvas = undefined;
+            }
+        },
+        culcSize(){
+                let parent = this.$refs.wrapper;
+                let w = parent.clientWidth;
+                console.dir(parent.clientWidth);
+                const aspect = 0.7125;
 
+                w = w > 616 ? 616 : w;
 
-        }
+                return {
+                    width : w ,
+                    height : w * aspect
+                }
+
+        },
     },
     updated(){
-        if(this.image && this.frameUrl){
+        if(this.ready){
+            let canvas ;
+            let size;
+            if(this.canvas){
+                size = this.culcSize();
+                this.canvas.clear()
+                canvas = this.canvas
+            } else {
+                size = this.culcSize();
+                canvas = new fabric.Canvas(this.$refs.canvas,{
+                    ...size,
+                    selectionColor: 'blue',
+                    selectionLineWidth: 4
+                });
+            }
 
-            this.drawImage();
+            this.canvas = canvas;
 
+            canvas.selection = false;
+            const userImg = new fabric.Image(this.userImg, {
+                left: 0,
+                top: 0,
+            });
+            userImg.set('selectable', true);
+            const frameImg = new fabric.Image(this.frameImg, {
+                left: 0,
+                top: 0,
+                selectable: false,
+                ...size,
+            });
+
+            canvas.upperCanvasEl.onmouseover = () => {
+                console.log(0.3)
+                frameImg.opacity = 0.3;
+                canvas.setOverlayImage(frameImg, canvas.renderAll.bind(canvas));
+            };
+            canvas.upperCanvasEl.onmouseleave = () => {
+                console.log(1)
+                frameImg.opacity = 1;
+                canvas.setOverlayImage(frameImg, canvas.renderAll.bind(canvas));
+            };
+            canvas.add(userImg);
+            canvas.setOverlayImage(frameImg, canvas.renderAll.bind(canvas));
         }
-    },
-    computed:{
 
     },
     mounted(){
-        this.ctx = this.$refs.canvas.getContext('2d');;
+        const userImg = new Image();
+        userImg.src = this.userImage;
+        this.userImg = userImg;
     },
-
-
-
-
-
 });
