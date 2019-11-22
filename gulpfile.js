@@ -4,7 +4,8 @@ var gutil = require( 'gulp-util' );
 var ftp = require( 'vinyl-ftp' );
 
 const globs = [
-    "vue/*"
+    "vue/*",
+    "template-frame.php"
 ];
 
 function deploy () {
@@ -23,11 +24,11 @@ function deploy () {
     // turn off buffering in gulp.src for best performance
 
     return gulp.src(globs, {base: '.', buffer: false})
+        .pipe(conn.newer( '/yelka.wonser.ru/wp-content/themes/yelka' ))
         .pipe(conn.dest('/yelka.wonser.ru/wp-content/themes/yelka'));
-
 };
 
 
-gulp.task('deploy', ()=>{
+gulp.task('watch', ()=>{
     gulp.watch(globs, deploy);
 })

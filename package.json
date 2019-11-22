@@ -20,5 +20,10 @@
     "gulp": "^4.0.2",
     "gulp-util": "^3.0.8",
     "vinyl-ftp": "^0.6.1"
+  },
+  "dependencies": {
+    "vue": "^2.6.10",
+    "vue": "latest",
+    "vue": "latest"
   }
 }
